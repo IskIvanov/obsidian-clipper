@@ -54,4 +54,17 @@ describe('Vim editor', () => {
 		for (const key of ['d', 'w']) Vim.handleKey(cm, key, 'user');
 		expect(textarea.value).toBe('hello ');
 	});
+
+	it('does not undo into the previous note after a refill', () => {
+		const textarea = field('hello world');
+		const view = editor(textarea);
+		const cm = getCM(view)!;
+		view.dispatch({ selection: { anchor: 6 } });
+		for (const key of ['d', 'w']) Vim.handleKey(cm, key, 'user');
+		expect(textarea.value).toBe('hello ');
+
+		textarea.value = 'new note';
+		undo(view);
+		expect(textarea.value).toBe('new note');
+	});
 });
