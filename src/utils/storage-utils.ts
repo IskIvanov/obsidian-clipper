@@ -8,6 +8,7 @@ export let generalSettings: Settings = {
 	vaults: [],
 	betaFeatures: false,
 	legacyMode: false,
+	vimMode: false,
 	silentOpen: false,
 	openBehavior: 'popup',
 	highlighterEnabled: true,
@@ -63,6 +64,7 @@ interface StorageData {
 		showMoreActionsButton?: boolean;
 		betaFeatures?: boolean;
 		legacyMode?: boolean;
+		vimMode?: boolean;
 		silentOpen?: boolean;
 		openBehavior?: boolean | 'popup' | 'embedded';
 		saveBehavior?: 'addToObsidian' | 'copyToClipboard' | 'saveFile';
@@ -122,6 +124,7 @@ export async function loadSettings(): Promise<Settings> {
 		showMoreActionsButton: false,
 		betaFeatures: false,
 		legacyMode: false,
+		vimMode: false,
 		silentOpen: false,
 		openBehavior: 'popup',
 		highlighterEnabled: true,
@@ -184,6 +187,7 @@ export async function loadSettings(): Promise<Settings> {
 		showMoreActionsButton: data.general_settings?.showMoreActionsButton ?? defaultSettings.showMoreActionsButton,
 		betaFeatures: data.general_settings?.betaFeatures ?? defaultSettings.betaFeatures,
 		legacyMode: data.general_settings?.legacyMode ?? defaultSettings.legacyMode,
+		vimMode: data.general_settings?.vimMode ?? defaultSettings.vimMode,
 		silentOpen: data.general_settings?.silentOpen ?? defaultSettings.silentOpen,
 		openBehavior: typeof data.general_settings?.openBehavior === 'boolean' 
 			? (data.general_settings.openBehavior ? 'embedded' : 'popup') 
@@ -237,6 +241,7 @@ export async function saveSettings(settings?: Partial<Settings>): Promise<void> 
 			showMoreActionsButton: generalSettings.showMoreActionsButton,
 			betaFeatures: generalSettings.betaFeatures,
 			legacyMode: generalSettings.legacyMode,
+			vimMode: generalSettings.vimMode,
 			silentOpen: generalSettings.silentOpen,
 			openBehavior: generalSettings.openBehavior,
 			saveBehavior: generalSettings.saveBehavior,

@@ -215,6 +215,7 @@ export function initializeGeneralSettings(): void {
 		initializeShowMoreActionsToggle();
 		initializeBetaFeaturesToggle();
 		initializeLegacyModeToggle();
+		initializeVimModeToggle();
 		initializeSilentOpenToggle();
 		initializeVaultInput();
 		initializeOpenBehaviorDropdown();
@@ -252,6 +253,7 @@ function saveSettingsFromForm(): void {
 	const showMoreActionsToggle = document.getElementById('show-more-actions-toggle') as HTMLInputElement;
 	const betaFeaturesToggle = document.getElementById('beta-features-toggle') as HTMLInputElement;
 	const legacyModeToggle = document.getElementById('legacy-mode-toggle') as HTMLInputElement;
+	const vimModeToggle = document.getElementById('vim-mode-toggle') as HTMLInputElement;
 	const silentOpenToggle = document.getElementById('silent-open-toggle') as HTMLInputElement;
 	const highlighterToggle = document.getElementById('highlighter-toggle') as HTMLInputElement;
 	const alwaysShowHighlightsToggle = document.getElementById('highlighter-visibility') as HTMLInputElement;
@@ -263,6 +265,7 @@ function saveSettingsFromForm(): void {
 		showMoreActionsButton: showMoreActionsToggle?.checked ?? generalSettings.showMoreActionsButton,
 		betaFeatures: betaFeaturesToggle?.checked ?? generalSettings.betaFeatures,
 		legacyMode: legacyModeToggle?.checked ?? generalSettings.legacyMode,
+		vimMode: vimModeToggle?.checked ?? generalSettings.vimMode,
 		silentOpen: silentOpenToggle?.checked ?? generalSettings.silentOpen,
 		highlighterEnabled: highlighterToggle?.checked ?? generalSettings.highlighterEnabled,
 		alwaysShowHighlights: alwaysShowHighlightsToggle?.checked ?? generalSettings.alwaysShowHighlights,
@@ -335,6 +338,12 @@ function initializeBetaFeaturesToggle(): void {
 function initializeLegacyModeToggle(): void {
 	initializeSettingToggle('legacy-mode-toggle', generalSettings.legacyMode, (checked) => {
 		saveSettings({ ...generalSettings, legacyMode: checked });
+	});
+}
+
+function initializeVimModeToggle(): void {
+	initializeSettingToggle('vim-mode-toggle', generalSettings.vimMode, (checked) => {
+		saveSettings({ ...generalSettings, vimMode: checked });
 	});
 }
 

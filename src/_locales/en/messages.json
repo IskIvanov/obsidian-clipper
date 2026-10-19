@@ -1094,5 +1094,11 @@
 	},
 	"version": {
 		"message": "Version"
+	},
+	"vimMode": {
+		"message": "Vim key bindings"
+	},
+	"vimModeDescription": {
+		"message": "Use Vim key bindings to edit the note content in the clipper."
 	}
 }

@@ -73,6 +73,7 @@ export interface Settings {
 	showMoreActionsButton: boolean;
 	betaFeatures: boolean;
 	legacyMode: boolean;
+	vimMode: boolean;
 	silentOpen: boolean;
 	openBehavior: 'popup' | 'embedded' | 'reader';
 	highlighterEnabled: boolean;

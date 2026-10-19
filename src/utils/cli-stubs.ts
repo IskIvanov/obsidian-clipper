@@ -10,6 +10,7 @@ export const generalSettings: Settings = {
 	vaults: [],
 	betaFeatures: false,
 	legacyMode: false,
+	vimMode: false,
 	silentOpen: false,
 	openBehavior: 'popup',
 	highlighterEnabled: false,
