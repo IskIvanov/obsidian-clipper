@@ -62,6 +62,7 @@
 		"@codemirror/state": "^6.7.4",
 		"@codemirror/view": "^6.43.11",
 		"@lezer/highlight": "^1.2.3",
+		"@replit/codemirror-vim": "^6.4.0",
 		"@types/safari-extension": "^0.0.33",
 		"dayjs": "^1.11.13",
 		"defuddle": "^0.19.2",

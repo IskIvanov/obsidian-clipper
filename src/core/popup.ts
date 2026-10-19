@@ -1,19 +1,19 @@
-import dayjs from 'dayjs';
-import { Template, Property, PromptVariable } from '../types/types';
-import { incrementStat, addHistoryEntry, getClipHistory } from '../utils/storage-utils';
+import { Template, Property } from '../types/types';
+import { incrementStat } from '../utils/storage-utils';
 import { generateFrontmatter, saveToObsidian } from '../utils/obsidian-note-creator';
 import { extractPageContent, initializePageContent } from '../utils/content-extractor';
 import { compileTemplate } from '../utils/template-compiler';
 import { initializeIcons, getPropertyTypeIcon } from '../icons/icons';
 import { findMatchingTemplate, initializeTriggers } from '../utils/triggers';
 import { getLocalStorage, setLocalStorage, loadSettings, generalSettings, Settings } from '../utils/storage-utils';
-import { escapeHtml, unescapeValue } from '../utils/string-utils';
-import { loadTemplates, createDefaultTemplate } from '../managers/template-manager';
+import { unescapeValue } from '../utils/string-utils';
+import { loadTemplates } from '../managers/template-manager';
 import browser from '../utils/browser-polyfill';
 import { addBrowserClassToHtml, detectBrowser } from '../utils/browser-detection';
 import { createElementWithClass } from '../utils/dom-utils';
 import { initializeInterpreter, handleInterpreterUI, collectPromptVariables } from '../utils/interpreter';
 import { adjustNoteNameHeight } from '../utils/ui-utils';
+import { createVimEditor } from '../utils/vim-editor';
 import { debugLog, isDebugMode } from '../utils/debug';
 import { showVariables, initializeVariablesPanel, updateVariablesPanel } from '../managers/inspect-variables';
 import { isBlankPage, isValidUrl, isRestrictedUrl } from '../utils/active-tab-manager';
@@ -423,6 +423,11 @@ function setupEventListeners(tabId: number) {
 				e.preventDefault();
 			}
 		});
+	}
+
+	const noteContentField = document.getElementById('note-content-field') as HTMLTextAreaElement;
+	if (noteContentField && generalSettings.vimMode) {
+		createVimEditor(noteContentField);
 	}
 
 	const highlighterModeButton = document.getElementById('highlighter-mode');

@@ -35,7 +35,7 @@
 	flex-shrink: 1;
 	gap: var(--metadata-gap);
 	max-height: 46%;
-	overflow-y: scroll;
+	overflow-y: auto;
 	&:empty {
 		display: none;
 	}
