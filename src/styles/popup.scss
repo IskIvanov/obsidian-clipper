@@ -200,6 +200,10 @@
 			min-width: 100px;
 			cursor: default;
 		}
+		#path-name-field {
+			flex-grow: 1;
+			min-width: 0;
+		}
 	}
 }
 
