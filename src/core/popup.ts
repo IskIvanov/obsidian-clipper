@@ -35,6 +35,8 @@ let templates: Template[] = [];
 let currentVariables: { [key: string]: string } = {};
 let currentTabId: number | undefined;
 let lastSelectedVault: string | null = null;
+let lastSelectedPath: string | null = null;
+let pathHistory: string[] = [];
 
 const isSidePanel = window.location.pathname.includes('side-panel.html');
 const urlParams = new URLSearchParams(window.location.search);
@@ -197,6 +199,14 @@ async function initializeExtension(tabId: number) {
 			lastSelectedVault = loadedSettings.vaults[0];
 		}
 		debugLog('Vaults', 'Last selected vault:', lastSelectedVault);
+
+		// Load persisted folder path state: last manual path and MRU history
+		lastSelectedPath = await getLocalStorage('lastSelectedPath');
+		const storedHistory = await getLocalStorage('pathHistory');
+		pathHistory = Array.isArray(storedHistory)
+			? storedHistory.filter((p: unknown) => typeof p === 'string')
+			: [];
+		debugLog('Path', 'Last selected path:', lastSelectedPath, 'history:', pathHistory.length);
 
 		const tab = await getTabInfo(tabId);
 		if (!tab.url || isBlankPage(tab.url)) {
@@ -378,6 +388,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 			try {
 				// DOM-dependent initializations
 				updateVaultDropdown(loadedSettings.vaults);
+				populatePathDatalist();
 				populateTemplateDropdown();
 				setupEventListeners(currentTabId);
 				await initializeUI();
@@ -428,6 +439,13 @@ function setupEventListeners(tabId: number) {
 	const noteContentField = document.getElementById('note-content-field') as HTMLTextAreaElement;
 	if (noteContentField && generalSettings.vimMode) {
 		createVimEditor(noteContentField);
+	}
+
+	const pathField = document.getElementById('path-name-field') as HTMLInputElement;
+	if (pathField) {
+		pathField.addEventListener('change', async () => {
+			await saveSelectedPath(pathField.value);
+		});
 	}
 
 	const highlighterModeButton = document.getElementById('highlighter-mode');
@@ -934,7 +952,10 @@ async function fillTemplateFieldValues(currentTabId: number, template: Template 
 
 	const pathField = document.getElementById('path-name-field') as HTMLInputElement;
 	if (pathField) {
-		pathField.value = formattedPath;
+		// Template paths containing variables always use the compiled value;
+		// otherwise restore the user's last manually-entered path if one exists.
+		const templatePathHasVariables = /{{.*?}}/.test(template.path || '');
+		pathField.value = (!templatePathHasVariables && lastSelectedPath) ? lastSelectedPath : formattedPath;
 	}
 
 	const noteContentField = document.getElementById('note-content-field') as HTMLTextAreaElement;
@@ -1085,6 +1106,35 @@ function updateVaultDropdown(vaults: string[]) {
 		lastSelectedVault = vaultDropdown.value;
 		setLocalStorage('lastSelectedVault', lastSelectedVault);
 	});
+}
+
+function populatePathDatalist() {
+	const datalist = document.getElementById('path-history-list') as HTMLDataListElement | null;
+	if (!datalist) return;
+	datalist.textContent = '';
+	for (const path of pathHistory) {
+		const option = document.createElement('option');
+		option.value = path;
+		datalist.appendChild(option);
+	}
+}
+
+async function addToPathHistory(path: string): Promise<void> {
+	const trimmed = path.trim();
+	if (!trimmed) return;
+	// MRU: move to front, dedupe, cap at 50
+	pathHistory = [trimmed, ...pathHistory.filter(p => p !== trimmed)].slice(0, 50);
+	await setLocalStorage('pathHistory', pathHistory);
+	populatePathDatalist();
+}
+
+async function saveSelectedPath(path: string): Promise<void> {
+	const trimmed = path.trim();
+	lastSelectedPath = trimmed || null;
+	// Persist even when empty — a cleared path must not resurrect the
+	// previous folder on the next clip. History only gains non-empty entries.
+	await setLocalStorage('lastSelectedPath', lastSelectedPath);
+	await addToPathHistory(trimmed);
 }
 
 function refreshPopup() {
@@ -1359,6 +1409,9 @@ async function handleClipObsidian(): Promise<void> {
 
 		lastSelectedVault = selectedVault;
 		await setLocalStorage('lastSelectedVault', lastSelectedVault);
+
+		// Persist the path so it survives popup reopen
+		if (path) await saveSelectedPath(path);
 
 		if (!isSidePanel) {
 			setTimeout(() => window.close(), 500);
